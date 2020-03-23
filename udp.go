@@ -129,7 +129,7 @@ func UdpRemote(addr string, shadow func(net.PacketConn) net.PacketConn) {
 	defer c.Close()
 	c = shadow(c)
 
-	nm := newNATmap(config.UDPTimeout)
+	nm := newNATmap(5 * time.Minute)
 	buf := make([]byte, udpBufSize)
 
 	logf("listening UDP on %s", addr)

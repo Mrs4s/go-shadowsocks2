@@ -167,7 +167,7 @@ func main() {
 		}
 
 		go UdpRemote(udpAddr, ciph.PacketConn)
-		go TcpRemote(addr, ciph.StreamConn)
+		//go TcpRemote(addr, ciph.StreamConn)
 	}
 
 	sigCh := make(chan os.Signal, 1)

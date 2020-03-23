@@ -2,7 +2,9 @@ package shadowsocks
 
 import (
 	"io"
+	"log"
 	"net"
+	"strings"
 	"time"
 
 	"github.com/Mrs4s/go-shadowsocks2/socks"
@@ -91,7 +93,7 @@ func tcpLocal(addr, server string, shadow func(net.Conn) net.Conn, getAddr func(
 }
 
 // Listen on addr for incoming connections.
-func TcpRemote(addr string, shadow func(net.Conn) net.Conn) {
+func TcpRemote(addr string, shadow func(net.Conn) net.Conn, blackList []string) {
 	l, err := net.Listen("tcp", addr)
 	if err != nil {
 		logf("failed to listen on %s: %v", addr, err)
@@ -116,7 +118,12 @@ func TcpRemote(addr string, shadow func(net.Conn) net.Conn) {
 				logf("failed to get target address: %v", err)
 				return
 			}
-
+			for _, url := range blackList {
+				if strings.Contains(strings.ToLower(tgt.String()), strings.ToLower(url)) {
+					log.Println("request blocked: " + tgt.String())
+					return
+				}
+			}
 			rc, err := net.Dial("tcp", tgt.String())
 			if err != nil {
 				logf("failed to connect to target: %v", err)
