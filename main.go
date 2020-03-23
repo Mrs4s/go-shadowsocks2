@@ -1,4 +1,4 @@
-package main
+package shadowsocks
 
 import (
 	"crypto/rand"
@@ -166,8 +166,8 @@ func main() {
 			log.Fatal(err)
 		}
 
-		go udpRemote(udpAddr, ciph.PacketConn)
-		go tcpRemote(addr, ciph.StreamConn)
+		go UdpRemote(udpAddr, ciph.PacketConn)
+		go TcpRemote(addr, ciph.StreamConn)
 	}
 
 	sigCh := make(chan os.Signal, 1)
