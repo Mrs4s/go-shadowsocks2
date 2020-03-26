@@ -4,6 +4,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"net"
+	"strconv"
 	"time"
 
 	"sync"
@@ -169,7 +170,7 @@ func UdpRemote(addr string, shadow func(net.PacketConn) net.PacketConn, replyAdd
 			_, err = pc.WriteTo(payload, tgtUDPAddr) // accept only UDPAddr despite the signature
 		} else {
 			buf := make([]byte, 8)
-			str := []byte(tgtUDPAddr.IP.String())
+			str := []byte(tgtUDPAddr.IP.String() + ":" + strconv.FormatInt(int64(tgtUDPAddr.Port), 10))
 			binary.LittleEndian.PutUint32(buf, uint32(len(payload)))
 			binary.LittleEndian.PutUint32(buf[4:], uint32(len(str)))
 			_, err = pc.WriteTo(append(append(buf, str...), payload...), &net.UDPAddr{

@@ -152,7 +152,7 @@ func main() {
 			}
 		}
 
-		udpAddr := addr
+		//udpAddr := addr
 
 		if flags.Plugin != "" {
 			addr, err = startPlugin(flags.Plugin, flags.PluginOpts, addr, true)
@@ -161,7 +161,7 @@ func main() {
 			}
 		}
 
-		ciph, err := core.PickCipher(cipher, key, password)
+		//ciph, err := core.PickCipher(cipher, key, password)
 		if err != nil {
 			log.Fatal(err)
 		}
