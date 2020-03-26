@@ -141,12 +141,12 @@ func main() {
 
 	if flags.Server != "" { // server mode
 		addr := flags.Server
-		cipher := flags.Cipher
-		password := flags.Password
+		//cipher := flags.Cipher
+		//password := flags.Password
 		var err error
 
 		if strings.HasPrefix(addr, "ss://") {
-			addr, cipher, password, err = parseURL(addr)
+			//addr, cipher, password, err = parseURL(addr)
 			if err != nil {
 				log.Fatal(err)
 			}
