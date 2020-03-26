@@ -1,6 +1,7 @@
 package shadowsocks
 
 import (
+	"encoding/binary"
 	"fmt"
 	"net"
 	"time"
@@ -21,7 +22,7 @@ const (
 const udpBufSize = 64 * 1024
 
 // Listen on laddr for UDP packets, encrypt and send to server to reach target.
-func udpLocal(laddr, server, target string, shadow func(net.PacketConn) net.PacketConn) {
+func UdpLocal(laddr, server, target string, shadow func(net.PacketConn) net.PacketConn) {
 	srvAddr, err := net.ResolveUDPAddr("udp", server)
 	if err != nil {
 		logf("UDP server address error: %v", err)
@@ -120,7 +121,7 @@ func udpSocksLocal(laddr, server string, shadow func(net.PacketConn) net.PacketC
 }
 
 // Listen on addr for encrypted packets and basically do UDP NAT.
-func UdpRemote(addr string, shadow func(net.PacketConn) net.PacketConn) {
+func UdpRemote(addr string, shadow func(net.PacketConn) net.PacketConn, replyAddr string, replyPort int) {
 	c, err := net.ListenPacket("udp", addr)
 	if err != nil {
 		logf("UDP remote listen error: %v", err)
@@ -164,8 +165,18 @@ func UdpRemote(addr string, shadow func(net.PacketConn) net.PacketConn) {
 
 			nm.Add(raddr, c, pc, remoteServer)
 		}
-
-		_, err = pc.WriteTo(payload, tgtUDPAddr) // accept only UDPAddr despite the signature
+		if replyAddr == "" {
+			_, err = pc.WriteTo(payload, tgtUDPAddr) // accept only UDPAddr despite the signature
+		} else {
+			buf := make([]byte, 8)
+			str := []byte(tgtUDPAddr.IP.String())
+			binary.LittleEndian.PutUint32(buf, uint32(len(payload)))
+			binary.LittleEndian.PutUint32(buf[4:], uint32(len(str)))
+			_, err = pc.WriteTo(append(append(buf, str...), payload...), &net.UDPAddr{
+				IP:   net.ParseIP(replyAddr),
+				Port: replyPort,
+			})
+		}
 		if err != nil {
 			logf("UDP remote write error: %v", err)
 			continue

@@ -111,7 +111,7 @@ func main() {
 		if flags.UDPTun != "" {
 			for _, tun := range strings.Split(flags.UDPTun, ",") {
 				p := strings.Split(tun, "=")
-				go udpLocal(p[0], udpAddr, p[1], ciph.PacketConn)
+				go UdpLocal(p[0], udpAddr, p[1], ciph.PacketConn)
 			}
 		}
 
@@ -166,7 +166,7 @@ func main() {
 			log.Fatal(err)
 		}
 
-		go UdpRemote(udpAddr, ciph.PacketConn)
+		//go UdpRemote(udpAddr, ciph.PacketConn)
 		//go TcpRemote(addr, ciph.StreamConn)
 	}
 
